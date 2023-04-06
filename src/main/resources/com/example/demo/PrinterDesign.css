@@ -1,0 +1,29 @@
+.custom-button {
+    -fx-background-color: #1E90FF; /* Set the background color */
+    -fx-text-fill: white; /* Set the text color */
+    -fx-transition-duration: 0.2s; /* Set transition duration */
+}
+
+.custom-button:hover {
+    -fx-background-color: #87CEEB; /* Set the new background color on hover */
+}
+
+.custom-button:pressed {
+    -fx-background-color: #00BFFF; /* Set the new background color when pressed */
+}
+
+/* add border animation like color rounding with green */
+
+.custom-button {
+    -fx-border-radius: 5px; /* Set border radius */
+    -fx-border-color: #1E90FF; /* Set border color */
+    -fx-border-width: 2px; /* Set border width */
+}
+
+.custom-button:hover {
+    -fx-border-color: #00FF7F; /* Set the new border color on hover */
+}
+
+.custom-button:pressed {
+    -fx-border-color: #00BFFF; /* Set the new border color when pressed */
+}
