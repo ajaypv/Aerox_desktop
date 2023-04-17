@@ -4,12 +4,7 @@ module com.example.demo {
     requires java.sql;
     requires fontawesomefx;
     requires java.desktop;
-    requires aws.java.sdk.cognitoidentity;
-    requires aws.java.sdk.core;
-    requires software.amazon.awssdk.services.ivs;
-    requires software.amazon.awssdk.services.cognitoidentityprovider;
-    requires software.amazon.awssdk.regions;
-    requires software.amazon.awssdk.auth;
+
 
     requires Java.WebSocket;
     requires com.google.gson;

@@ -20,10 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
+
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -103,14 +100,9 @@ public class FXMLDocumentController implements Initializable {
     private Connection connect;
     private PreparedStatement prepare;
     private ResultSet result;
-    String clientId = "5pmsm7mbanltn7s071tfeumfkr";
-    String poolId = "ap-south-1_TRsGZh3Yj";
 
 
-    CognitoIdentityProviderClient identityProviderClient = CognitoIdentityProviderClient.builder()
-            .region(Region.AP_SOUTH_1)
-            .credentialsProvider(ProfileCredentialsProvider.create())
-            .build();
+
 
 
 
@@ -189,34 +181,6 @@ public class FXMLDocumentController implements Initializable {
         String userName = "user676qpttb1j00";
         String password ="ajaypv@160Aaa";
         String email = "ajaypv44@gmail.com";
-        AttributeType userAttrs = AttributeType.builder()
-                .name("email")
-                .value(email)
-                .build();
-
-        List<AttributeType> userAttrsList = new ArrayList<>();
-        userAttrsList.add(userAttrs);
-        try {
-            SignUpRequest signUpRequest = SignUpRequest.builder()
-                    .userAttributes(userAttrsList)
-                    .username(userName)
-                    .clientId(clientId)
-                    .password(password)
-                    .build();
-
-
-            identityProviderClient.signUp(signUpRequest);
-            System.out.println("User has been signed up ");
-
-
-
-
-        } catch(CognitoIdentityProviderException e) {
-            System.out.println(e);
-
-            System.exit(1);
-        }
-
 
 
 
@@ -224,21 +188,7 @@ public class FXMLDocumentController implements Initializable {
 
 
     }
-    public static void getAdminUser(CognitoIdentityProviderClient identityProviderClient, String userName, String poolId) {
-        try {
-            AdminGetUserRequest userRequest = AdminGetUserRequest.builder()
-                    .username(userName)
-                    .userPoolId(poolId)
-                    .build();
 
-            AdminGetUserResponse response = identityProviderClient.adminGetUser(userRequest);
-            System.out.println("User status "+response.userStatusAsString());
-
-        } catch (CognitoIdentityProviderException e){
-            System.err.println(e);
-            System.exit(1);
-        }
-    }
 
     public void signupSlider() {
 

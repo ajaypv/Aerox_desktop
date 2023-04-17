@@ -97,6 +97,7 @@ public class DownloadPdfBlockingQueueExample {
             outputStream.close();
 
             System.out.println("File downloaded successfully!" + fileName);
+            System.out.println(pdfDetails.PrinterSelection);
             String sql = "UPDATE pdfprints SET status = ? WHERE pdfUUID = ?";
             PreparedStatement pstmt = connect.prepareStatement(sql);
             pstmt.setString(1, "downloaded");
@@ -108,13 +109,13 @@ public class DownloadPdfBlockingQueueExample {
             long WaitingTime = Integer.parseInt(pdfDetails.numberPages) * 2000;
             System.out.println(WaitingTime+"Time to wait ");
 
-            String printerName = "Dell";
+            String printerName = pdfDetails.PrinterSelection;
 
             String sqlForUpdatePrinterWaitingTime = "UPDATE PRINTERS SET waitingTime = waitingTime + ? WHERE PrinterName = ?";
             PreparedStatement pstmt2 = connect.prepareStatement(sqlForUpdatePrinterWaitingTime);
 
             pstmt2.setInt(1, (int) WaitingTime);
-            pstmt2.setString(2, "Dell");
+            pstmt2.setString(2, pdfDetails.PrinterSelection);
             pstmt2.executeUpdate();
 
             String sqlWaittime = "SELECT waitingTime FROM PRINTERS WHERE PrinterName = ?";

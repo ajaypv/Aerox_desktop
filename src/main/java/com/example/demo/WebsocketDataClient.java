@@ -1,23 +1,21 @@
 package com.example.demo;
 
-import java.net.URI;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.google.gson.Gson;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.handshake.ServerHandshake;
-import com.google.gson.Gson;
-import org.json.JSONObject;
+
+import java.net.URI;
+import java.sql.Connection;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class WebsocketDataClient extends WebSocketClient {
 
   private Connection connection;
+  private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
   public WebsocketDataClient(URI serverUri, Draft draft) {
     super(serverUri, draft);
@@ -33,39 +31,7 @@ public class WebsocketDataClient extends WebSocketClient {
 
   @Override
   public void onOpen(ServerHandshake handshakedata) {
-  try {
-    connection = database.connectDb();
-    String sql = "SELECT * FROM PRINTERS WHERE PrinterPower = 'on'";
-    PreparedStatement statement = connection.prepareStatement(sql);
-    ResultSet result = statement.executeQuery();
-    while (result.next()) {
-      int printerID = result.getInt("PrinterID");
-      String printerName = result.getString("PrinterName");
-      String printerStatus = result.getString("PrinterCurrentStatus");
-      String printerColorSupport = result.getString("PrinterColorSupport");
-      String printerPower = result.getString("Printerpower");
-      int printerSpeedPerPage = result.getInt("PrinterSpeedPerPage");
-      int printerPrintsCount = result.getInt("PrinterPrintsCount");
-      int totalPages = result.getInt("Totalpages");
-      int waitingTime = result.getInt("waitingTime");
-      PrinterData printer = new PrinterData(printerID, printerName, printerStatus, printerColorSupport, printerPower, printerSpeedPerPage, printerPrintsCount, totalPages, waitingTime);
-      Gson gson = new Gson();
-      String json = gson.toJson(printer);
-      JSONObject message = new JSONObject();
-      message.put("StoreID", "nhce1");
-      message.put("action", "onMessage");
-      message.put("data", json);
-      send(message.toString());
-    }
-
-
-
-
-
-  }catch(SQLException e){
-    System.out.println(e);
-  }
-
+    PrinterSupporter.updateOnlinePrinterData(this);
     System.out.println("opened connection");
   }
 
@@ -73,13 +39,12 @@ public class WebsocketDataClient extends WebSocketClient {
   public void onMessage(String message) {
     System.out.println("received: " + message);
     try {
+
       Gson gson = new Gson();
       WebsocketData websocketData = gson.fromJson(message, WebsocketData.class);
 
       if (websocketData.route.equals("printPDf")) {
-        System.out.println(websocketData.pdfUUID);
         DataRecevingBlockingQueue.addData(websocketData.data);
-
       } else if (websocketData.route.equals("otherRoute")) {
         System.out.println("Received data for other route:");
       } else {
@@ -95,6 +60,14 @@ public class WebsocketDataClient extends WebSocketClient {
     System.out.println(
         "Connection closed by " + (remote ? "remote peer" : "us") + " Code: " + code + " Reason: "
             + reason);
+
+          scheduler.schedule(() -> {
+            if (!isClosed()) {
+              return;
+            }
+            System.out.println("Attempting to reconnect...");
+            reconnect();
+          }, 5, TimeUnit.SECONDS);
   }
 
   public void sendMessage(String message) {

@@ -37,17 +37,17 @@
             <version>2.10.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>cognitoidentity</artifactId>
-            <version>2.20.12</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>software.amazon.awssdk</groupId>-->
+<!--            <artifactId>cognitoidentity</artifactId>-->
+<!--            <version>2.20.12</version>-->
+<!--        </dependency>-->
 
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>cognitoidentityprovider</artifactId>
-            <version>2.14.11</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>software.amazon.awssdk</groupId>-->
+<!--            <artifactId>cognitoidentityprovider</artifactId>-->
+<!--            <version>2.14.11</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>log4j</groupId>
@@ -55,11 +55,11 @@
             <version>1.2.17</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-cognitoidentity</artifactId>
-            <version>1.12.401</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.amazonaws</groupId>-->
+<!--            <artifactId>aws-java-sdk-cognitoidentity</artifactId>-->
+<!--            <version>1.12.401</version>-->
+<!--        </dependency>-->
         <!-- Hibernate -->
         <dependency>
             <groupId>com.h2database</groupId>
@@ -67,13 +67,13 @@
             <version>2.1.214</version>
         </dependency>
 
-        <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>bom</artifactId>
-                    <version>2.19.30</version>
-                    <type>pom</type>
-                    <scope>import</scope>
-                </dependency>
+<!--        <dependency>-->
+<!--                    <groupId>software.amazon.awssdk</groupId>-->
+<!--                    <artifactId>bom</artifactId>-->
+<!--                    <version>2.19.30</version>-->
+<!--                    <type>pom</type>-->
+<!--                    <scope>import</scope>-->
+<!--                </dependency>-->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -91,11 +91,11 @@
             <artifactId>fontawesomefx</artifactId>
             <version>8.2</version>
         </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>aws-sdk-java</artifactId>
-            <version>2.19.33</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>software.amazon.awssdk</groupId>-->
+<!--            <artifactId>aws-sdk-java</artifactId>-->
+<!--            <version>2.19.33</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>

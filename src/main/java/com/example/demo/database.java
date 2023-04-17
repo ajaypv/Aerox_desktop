@@ -70,6 +70,7 @@ public class database {
                         "PrinterID INT PRIMARY KEY AUTO_INCREMENT," +
                         "PrinterName VARCHAR," +
                         "PrinterCurrentStatus VARCHAR," +
+                        "PrinterOptionSelect VARCHAR," +
                         "PrinterColorSupport VARCHAR," +
                         "Printerpower VARCHAR," +
                         "PrinterSpeedPerPage INTEGER," +

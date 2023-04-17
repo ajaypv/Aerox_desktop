@@ -3,18 +3,21 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.ResourceBundle;
+import java.util.prefs.BackingStoreException;
 
 public class PrinterController implements Initializable {
+
+
+                private PrinterData printerModel;
 
                 private Connection connect;
 
@@ -54,21 +57,23 @@ public class PrinterController implements Initializable {
 
 
 
+
+
+
+
         public void setData(PrinterData printer){
             System.out.println("called in setdata printer");
+            System.out.println(printer.getPrinterPower());
+            this.printerModel = printer;
                 PrinterName.setText(printer.getPrinterName());
-                PrinterStatus.setText(printer.getPrinterStatus());
-                WaitingTime.setText(String.valueOf(printer.getWaitingTime()));
-                TotalPages.setText(String.valueOf(printer.getTotalPages()));
                 PrinterPowerStatus.setText(printer.getPrinterPower());
-                WaitingTime.setText(String.valueOf(printer.getWaitingTime()));
-                PendingPrints.setText(String.valueOf(printer.getPrinterPrintsCount()));
-                ColourSupport.setText(printer.getPrinterColorSupport());
-                PrintSpeedperPage.setText(String.valueOf(printer.getPrinterSpeedPerPage()));
+                TotalPages.setText(String.valueOf(printer.getTotalPages()));
+                PrinterObject.setUserData(printer);
+                String power = printer.getPrinterPower();
+                String selectedOption = printer.getPrinterOptionSelect();
 
-            boolean isOn = printer.getPrinterStatus().equals("on");
-
-            if (isOn) {
+            myChoiceBox.getSelectionModel().select(selectedOption);
+            if (power.equals("Online")) {
                 PrinterName.setStyle("-fx-text-fill: green;");
                 PrinterPowerButton.setSelected(true);
             } else {
@@ -76,36 +81,68 @@ public class PrinterController implements Initializable {
                 PrinterPowerButton.setSelected(false);
             }
 
+
         }
 
 
-        public void handlePrinterPower(ActionEvent actionEvent) throws SQLException {
+
+
+
+    public void handlePrinterPower(ActionEvent actionEvent) throws SQLException, BackingStoreException, IOException {
                 boolean isOn = PrinterPowerButton.isSelected();
-                String printerName = PrinterName.getText();
                 if (isOn) {
-                        System.out.println(printerName + " is turned on");
                         PrinterName.setStyle("-fx-text-fill: green;");
-                        PrinterData.UpdatePrinterPower(isOn,printerName);
-                        PrinterPowerStatus.setText("on");
+                        printerModel = (PrinterData) PrinterObject.getUserData();
+                        PrinterData.UpdatePrinterPower(true, printerModel.getPrinterName());
 
                 } else {
-                        System.out.println(printerName + " is turned off");
                         PrinterName.setStyle("-fx-text-fill: red;");
-                        PrinterData.UpdatePrinterPower(isOn,printerName);
-                        PrinterPowerStatus.setText("off");
-                }
+                          System.out.println(printerModel.getPrinterName());
+                        printerModel = (PrinterData) PrinterObject.getUserData();
+                    PrinterData.UpdatePrinterPower(false, printerModel.getPrinterName());
 
+                }
         }
+
+
+
 
         @Override
         public void initialize(URL url, ResourceBundle resourceBundle) {
-            String[] printerOptions = {"colorPinter", "SinglePage", "DoublePage"};
+            String[] printerOptions = {"colorPinter", "Single-Side", "Double-Side","AllTypePrints"};
             myChoiceBox.getItems().addAll(printerOptions);
+            myChoiceBox.setOnAction(this::getPrinterOption);
 
         }
 
+    private void getPrinterOption(ActionEvent actionEvent) {
+        String selectedOption = myChoiceBox.getValue();
+        System.out.println(selectedOption);
+        try {
+                String printerName = PrinterName.getText();
+
+                try {
+
+                    connect = database.connectDb();
+                    String sql = "UPDATE printers SET PrinterOptionSelect  = ? WHERE PrinterName = ?";
+                    PreparedStatement pstmt = connect.prepareStatement(sql);
+                    pstmt.setString(1,  selectedOption);
+                    pstmt.setString(2, printerName);
+                    pstmt.executeUpdate();
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+                connect.close();
+
+        }catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
+
+
     public void setToatlPages(KeyEvent keyEvent) throws SQLException {
-            System.out.println("clicled");
+
             try {
                 String totalVlaue = TotalPages.getText();
 

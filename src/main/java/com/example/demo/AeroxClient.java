@@ -16,6 +16,8 @@ import javafx.stage.StageStyle;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -27,6 +29,7 @@ import java.util.*;
 public class AeroxClient extends Application implements Runnable{
 
     private Timer heartbeatTimer;
+    private static Connection connect;
 
     private double x = 0;
     private double y = 0;
@@ -69,8 +72,6 @@ public class AeroxClient extends Application implements Runnable{
         launch(args);
 
 
-
-
     }
 
 
@@ -78,8 +79,7 @@ public class AeroxClient extends Application implements Runnable{
     @Override
     public void run() {
         PrinterSupporter printerSupporter = new PrinterSupporter();
-        printerSupporter.addPrinter();
-       printerSupporter.retrievePrinterListPreferences();
+
         System.out.println("Hello from MyRunnable!");
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "done");
@@ -102,6 +102,9 @@ public class AeroxClient extends Application implements Runnable{
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+
+
+
         c.connect();
 
         if(c.isOpen()){
@@ -116,13 +119,6 @@ public class AeroxClient extends Application implements Runnable{
 
         }
 
-
-
-
-
-
-
-
         boolean databaseCheck;
         try {
             databaseCheck = database.Check();
@@ -134,9 +130,27 @@ public class AeroxClient extends Application implements Runnable{
         }else{
             System.out.println("databases error");
         }
+
+        connect = database.connectDb();
+        String updateSql = "UPDATE PRINTERS SET waitingTime = 0";
+        PreparedStatement pstmt = null;
+        try {
+            pstmt = connect.prepareStatement(updateSql);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        try {
+            PrinterData.UpdatePrinters();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         DataRecevingBlockingQueue.startConsumer();
         DownloadPdfBlockingQueueExample.startConsumer(c);
         PrintPDFBlockingQueue.startConsumer(c);
+
 
     }
 }

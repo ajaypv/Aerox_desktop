@@ -27,11 +27,23 @@ import java.net.URL;
 import java.sql.*;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.prefs.BackingStoreException;
 
 
 public class DashboardController implements Initializable {
+
+
+
+
+
+
+    static DashboardController instance;
+
+    public void setDashboardController(DashboardController controller) {
+        instance = controller;
+    }
     @FXML
-    private GridPane PrinterGrid;
+    GridPane PrinterGrid;
 
     @FXML
     private ChoiceBox<String> myChoiceBox;
@@ -297,7 +309,7 @@ public class DashboardController implements Initializable {
 
     }
 
-    public void switchForm(ActionEvent event) throws SQLException {
+    public void switchForm(ActionEvent event) throws SQLException, BackingStoreException {
         if (event.getSource() == dashboard_btn) {
             dashboard_form.setVisible(true);
             coaches_form.setVisible(false);
@@ -443,6 +455,7 @@ public class DashboardController implements Initializable {
 
                 md = new PrinterData(result.getInt("PrinterID"),
                         result.getString("PrinterName"),
+                        result.getString("PrinterOptionSelect"),
                         result.getString("PrinterCurrentStatus"),
                         result.getString("PrinterColorSupport"),
                         result.getString("Printerpower"),
@@ -464,11 +477,10 @@ public class DashboardController implements Initializable {
 
 
     private static  ObservableList<PdfDataModel> DisplayPrinterListData;
-    private static   ObservableList<PrinterData> DisplayPrinterList;
+    private static List<PrinterData> DisplayPrinterList;
 
     public void PrintListShowData() throws SQLException {
         DisplayPrinterListData = PrintDisplayList();
-
         members_col_customerID.setCellValueFactory(new PropertyValueFactory<>("memberId"));
         members_col_name.setCellValueFactory(new PropertyValueFactory<>("username"));
         members_col_address.setCellValueFactory(new PropertyValueFactory<>("color"));
@@ -485,12 +497,18 @@ public class DashboardController implements Initializable {
 
 
 
-    public void showPrinters() throws SQLException {
-        PrinterData.UpdatePrinters();
-        DisplayPrinterList = PrintersDataList();
+
+
+    public void showPrinters() throws SQLException, BackingStoreException {
+
+
+        System.out.println("called in the ShowPrinters");
+        DisplayPrinterList = PrinterData.getPrinters();
+
 
         int colums=0;
         int rows =1;
+
         for(int i =0 ; i<DisplayPrinterList.size();i++){
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource("PrinterItem.fxml"));
@@ -518,6 +536,7 @@ public class DashboardController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        setDashboardController(this);
 
 
 
@@ -526,6 +545,8 @@ public class DashboardController implements Initializable {
 
 
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (BackingStoreException e) {
             throw new RuntimeException(e);
         }
         try {
